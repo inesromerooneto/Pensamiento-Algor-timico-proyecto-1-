@@ -50,3 +50,16 @@ recursos = leer_recursos("recursos.txt")
 
 print("Tareas:", tareas)
 print("Recursos:", recursos)
+
+#Revisar compatibilidad entre recursos y tareas
+
+def compatibilidad_recursos(tarea, recursos):
+    lista = []
+    for r in recursos:
+        if tarea["categoria"] in r["categorias"]:
+            lista.append(r["id"])
+    return lista
+
+for tarea in tareas: 
+    comp = compatibilidad_recursos(tarea, recursos)
+    print("Tarea", tarea["id"], "->", comp)
