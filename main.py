@@ -41,28 +41,8 @@ def leer_recursos(nombre_archivo):
 
     return recursos
 
-def recursos_compatibles(tarea, recursos):
-    compatibles = []
+tareas = leer_tareas("tareas.txt")
+recursos = leer_recursos("recursos.txt")
 
-    for recurso in recursos:
-        if tarea["categoria"] in recurso["categorias"]:
-            compatibles.append(recurso)
-
-    return compatibles
-
-def crear_disponibilidad(recursos):
-    disponibilidad = {}
-
-    for recurso in recursos:
-        disponibilidad[recurso["id"]] = 0
-
-    return disponibilidad
-
-def elegir_recurso(compatibles, disponibilidad):
-    mejor = compatibles[0]
-
-    for recurso in compatibles:
-        if disponibilidad[recurso["id"]] < disponibilidad[mejor["id"]]:
-            mejor = recurso
-
-    return mejor
+print("Tareas:", tareas)
+print("Recursos:", recursos)
