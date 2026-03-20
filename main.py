@@ -1,7 +1,9 @@
 from pathlib import Path
+import sys
+from typing import Optional
 
-def leer_tareas(nombre_archivo):
-    tareas = []
+def leer_tareas(nombre_archivo) -> list[dict[str, object]]:
+    tareas : list[dict[str, object]] = []
     ruta = Path(__file__).resolve().parent / nombre_archivo
 
     with open(ruta, "r", encoding="utf-8") as archivo:
@@ -23,7 +25,7 @@ def leer_tareas(nombre_archivo):
     
     return tareas
             
-def leer_recursos(nombre_archivo):
+def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
     recursos = []
     ruta = Path(__file__).resolve().parent / nombre_archivo
 
