@@ -1,6 +1,5 @@
 from pathlib import Path
-import sys
-from typing import Optional
+
 
 def leer_tareas(nombre_archivo) -> list[dict[str, object]]:
     tareas : list[dict[str, object]] = []
@@ -51,8 +50,7 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
 tareas = leer_tareas("tareas.txt")
 recursos = leer_recursos("recursos.txt")
 
-print("Tareas:", tareas)
-print("Recursos:", recursos)
+
 
 #Revisar compatibilidad entre recursos y tareas
 
@@ -63,9 +61,6 @@ def compatibilidad_recursos(tarea, recursos):
             lista.append(r["id"])
     return lista
 
-for tarea in tareas: 
-    comp = compatibilidad_recursos(tarea, recursos)
-    print("Tarea", tarea["id"], "->", comp)
 
 #Siguiente paarte: por tarea, ver recursos compatibles, elegir uno, asignarlo, actualizar (exclusividaad)
 #Porque si un recurso ya tiene una tarea asignada, no puede hacer otra al mismo tiempo
@@ -95,7 +90,6 @@ def asignar_tareas(tareas, recursos):
         recurso_elegido = elegir_recurso(tarea, recursos)
 
         if recurso_elegido == None:
-            print("No hay recurso compatible para la tarea", tarea["id"])
             continue
 
         tiempo_inicio = recurso_elegido["tiempo_libre"]
@@ -116,12 +110,9 @@ def asignar_tareas(tareas, recursos):
 
 def obtener_duracion(tarea):
     return tarea["duracion"]
-
 tareas.sort(key=obtener_duracion, reverse=True)
 
-asignaciones = asignar_tareas(tareas, recursos)
-print("Asignaciones:", asignaciones)
-print("Recursos actualizados:", recursos)
+
 
 def calcular_makespan(recursos):
     makespan = 0
@@ -132,5 +123,21 @@ def calcular_makespan(recursos):
 
     return makespan
 
+def escribir_output(nombre_archivo, asignaciones):
+    ruta = Path(__file__).resolve().parent / nombre_archivo
+
+    with open(ruta, "w", encoding="utf-8") as archivo:
+        for asignacion in asignaciones:
+            linea = (
+                f"{asignacion['id_tarea']},"
+                f"{asignacion['id_recurso']},"
+                f"{asignacion['tiempo_inicio']},"
+                f"{asignacion['tiempo_fin']}\n"
+            )
+            archivo.write(linea)
+
+
+asignaciones = asignar_tareas(tareas, recursos)
+escribir_output("output.txt", asignaciones)
 makespan = calcular_makespan(recursos)
 print("Makespan:", makespan)
