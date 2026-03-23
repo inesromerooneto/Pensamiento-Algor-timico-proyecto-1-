@@ -47,8 +47,8 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
 
     return recursos
 
-tareas = leer_tareas("tareas_2.txt")
-recursos = leer_recursos("recursos_2.txt")
+tareas = leer_tareas("tareas_EP.txt")
+recursos = leer_recursos("recursos_EP.txt")
 
 
 
