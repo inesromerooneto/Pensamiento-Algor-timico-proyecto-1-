@@ -141,3 +141,6 @@ asignaciones = asignar_tareas(tareas, recursos)
 escribir_output("output.txt", asignaciones)
 makespan = calcular_makespan(recursos)
 print("Makespan:", makespan)
+
+print(asignaciones)
+print("Makespan:", makespan)
