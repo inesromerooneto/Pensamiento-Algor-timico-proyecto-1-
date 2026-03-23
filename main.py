@@ -47,8 +47,8 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
 
     return recursos
 
-tareas = leer_tareas("tareas.txt")
-recursos = leer_recursos("recursos.txt")
+tareas = leer_tareas("tareas_2.txt")
+recursos = leer_recursos("recursos_2.txt")
 
 
 
@@ -142,5 +142,3 @@ escribir_output("output.txt", asignaciones)
 makespan = calcular_makespan(recursos)
 print("Makespan:", makespan)
 
-print(asignaciones)
-print("Makespan:", makespan)
