@@ -1,29 +1,32 @@
 from pathlib import Path
+import random
+import time
 
 
 def leer_tareas(nombre_archivo) -> list[dict[str, object]]:
-    tareas : list[dict[str, object]] = []
+    tareas = []
     ruta = Path(__file__).resolve().parent / nombre_archivo
 
     with open(ruta, "r", encoding="utf-8") as archivo:
         for linea in archivo:
-            linea = linea.strip()  # sacar saltos de línea
+            linea = linea.strip()
 
             if linea == "":
-                continue  # saltar líneas vacías
+                continue
 
-            partes = [p.strip() for p in linea.split(",")]  # dividir por comas y quitar espacios
+            partes = [p.strip() for p in linea.split(",")]
 
             tarea = {
                 "id": partes[0],
                 "duracion": int(partes[1]),
                 "categoria": partes[2]
             }
-            
+
             tareas.append(tarea)
-    
+
     return tareas
-            
+
+
 def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
     recursos = []
     ruta = Path(__file__).resolve().parent / nombre_archivo
@@ -39,7 +42,7 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
 
             recurso = {
                 "id": partes[0],
-                "categorias": partes[1:],  # todas las partes después del ID son categorías 
+                "categorias": partes[1:],
                 "tiempo_libre": 0
             }
 
@@ -47,25 +50,56 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
 
     return recursos
 
-tareas = leer_tareas("tareas_EP.txt")
-recursos = leer_recursos("recursos_EP.txt")
+
+def copiar_tareas(tareas):
+    copia = []
+
+    for t in tareas:
+        nueva_tarea = {
+            "id": t["id"],
+            "duracion": t["duracion"],
+            "categoria": t["categoria"]
+        }
+        copia.append(nueva_tarea)
+
+    return copia
 
 
+def copiar_recursos(recursos):
+    copia = []
 
-#Revisar compatibilidad entre recursos y tareas
+    for r in recursos:
+        nuevo_recurso = {
+            "id": r["id"],
+            "categorias": r["categorias"][:],
+            "tiempo_libre": 0
+        }
+        copia.append(nuevo_recurso)
+
+    return copia
+
 
 def compatibilidad_recursos(tarea, recursos):
     lista = []
+
     for r in recursos:
         if tarea["categoria"] in r["categorias"]:
             lista.append(r["id"])
+
     return lista
 
 
-#Siguiente paarte: por tarea, ver recursos compatibles, elegir uno, asignarlo, actualizar (exclusividaad)
-#Porque si un recurso ya tiene una tarea asignada, no puede hacer otra al mismo tiempo
+def cantidad_compatibles(tarea, recursos):
+    contador = 0
 
-def elegir_recurso(tarea, recursos):
+    for r in recursos:
+        if tarea["categoria"] in r["categorias"]:
+            contador += 1
+
+    return contador
+
+
+def elegir_recurso(tarea, recursos, desempate_random=False):
     compatibles = []
 
     for r in recursos:
@@ -75,21 +109,31 @@ def elegir_recurso(tarea, recursos):
     if len(compatibles) == 0:
         return None
 
-    mejor = compatibles[0]
+    mejor_tiempo = compatibles[0]["tiempo_libre"]
 
     for r in compatibles:
-        if r["tiempo_libre"] < mejor["tiempo_libre"]:
-            mejor = r
+        if r["tiempo_libre"] < mejor_tiempo:
+            mejor_tiempo = r["tiempo_libre"]
 
-    return mejor
+    mejores = []
 
-def asignar_tareas(tareas, recursos):
+    for r in compatibles:
+        if r["tiempo_libre"] == mejor_tiempo:
+            mejores.append(r)
+
+    if desempate_random and len(mejores) > 1:
+        return random.choice(mejores)
+
+    return mejores[0]
+
+
+def asignar_tareas(tareas, recursos, desempate_random=False):
     asignaciones = []
 
     for tarea in tareas:
-        recurso_elegido = elegir_recurso(tarea, recursos)
+        recurso_elegido = elegir_recurso(tarea, recursos, desempate_random)
 
-        if recurso_elegido == None:
+        if recurso_elegido is None:
             continue
 
         tiempo_inicio = recurso_elegido["tiempo_libre"]
@@ -108,10 +152,28 @@ def asignar_tareas(tareas, recursos):
 
     return asignaciones
 
+
 def obtener_duracion(tarea):
     return tarea["duracion"]
-tareas.sort(key=obtener_duracion, reverse=True)
 
+
+def ordenar_tareas_segun_criterio(tareas, recursos, criterio):
+    if criterio == "larga_primero":
+        tareas.sort(key=obtener_duracion, reverse=True)
+
+    elif criterio == "corta_primero":
+        tareas.sort(key=obtener_duracion)
+
+    elif criterio == "restrictiva_primero":
+        tareas.sort(key=lambda t: (cantidad_compatibles(t, recursos), -t["duracion"]))
+
+    elif criterio == "mixta":
+        tareas.sort(key=lambda t: (-t["duracion"], cantidad_compatibles(t, recursos)))
+
+    elif criterio == "aleatoria":
+        random.shuffle(tareas)
+
+    return tareas
 
 
 def calcular_makespan(recursos):
@@ -122,6 +184,7 @@ def calcular_makespan(recursos):
             makespan = r["tiempo_libre"]
 
     return makespan
+
 
 def escribir_output(nombre_archivo, asignaciones):
     ruta = Path(__file__).resolve().parent / nombre_archivo
@@ -137,8 +200,55 @@ def escribir_output(nombre_archivo, asignaciones):
             archivo.write(linea)
 
 
-asignaciones = asignar_tareas(tareas, recursos)
-escribir_output("output.txt", asignaciones)
-makespan = calcular_makespan(recursos)
-print("Makespan:", makespan)
+def buscar_mejor_solucion(tareas_originales, recursos_originales, tiempo_limite=8):
+    mejor_asignaciones = []
+    mejor_makespan = None
 
+    criterios = [
+        "larga_primero",
+        "corta_primero",
+        "restrictiva_primero",
+        "mixta",
+        "aleatoria"
+    ]
+
+    inicio = time.time()
+    intento = 0
+
+    while time.time() - inicio < tiempo_limite:
+        random.seed(intento)
+
+        tareas = copiar_tareas(tareas_originales)
+        recursos = copiar_recursos(recursos_originales)
+
+        criterio = criterios[intento % len(criterios)]
+        tareas = ordenar_tareas_segun_criterio(tareas, recursos, criterio)
+
+        if criterio == "aleatoria" or criterio == "mixta":
+            desempate_random = True
+        else:
+            desempate_random = False
+
+        asignaciones = asignar_tareas(tareas, recursos, desempate_random)
+        makespan = calcular_makespan(recursos)
+
+        if mejor_makespan is None or makespan < mejor_makespan:
+            mejor_makespan = makespan
+            mejor_asignaciones = asignaciones
+
+        intento += 1
+
+    return mejor_asignaciones, mejor_makespan
+
+
+tareas_originales = leer_tareas("tareas_EP.txt")
+recursos_originales = leer_recursos("recursos_EP.txt")
+
+mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
+    tareas_originales,
+    recursos_originales,
+    tiempo_limite=0.5
+)
+
+escribir_output("output.txt", mejor_asignacion)
+print("Makespan:", mejor_makespan)
