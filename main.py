@@ -253,4 +253,15 @@ mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
 
-print("prueba para ver si bugeo")
+def main():
+    tareas_originales = leer_tareas("tareas_1000.txt")
+    recursos_originales = leer_recursos("recursos_500.txt")
+
+    mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
+        tareas_originales,
+        recursos_originales,
+        tiempo_limite=0.5
+    )
+
+    escribir_output("output.txt", mejor_asignacion)
+    print("Makespan:", mejor_makespan)
