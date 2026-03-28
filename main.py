@@ -254,8 +254,8 @@ escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
 
 def main():
-    tareas_originales = leer_tareas("tareas_1000.txt")
-    recursos_originales = leer_recursos("recursos_500.txt")
+    tareas_originales = leer_tareas("tareas_EP.txt")
+    recursos_originales = leer_recursos("recursos_EP.txt")
 
     mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
         tareas_originales,
