@@ -252,3 +252,5 @@ mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
 
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
+
+print("prueba para ver si bugeo")
