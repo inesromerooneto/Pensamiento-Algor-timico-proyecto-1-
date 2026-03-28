@@ -79,15 +79,6 @@ def copiar_recursos(recursos):
     return copia
 
 
-def compatibilidad_recursos(tarea, recursos):
-    lista = []
-
-    for r in recursos:
-        if tarea["categoria"] in r["categorias"]:
-            lista.append(r["id"])
-
-    return lista
-
 
 def cantidad_compatibles(tarea, recursos):
     contador = 0
@@ -213,7 +204,7 @@ def buscar_mejor_solucion(tareas_originales, recursos_originales, tiempo_limite=
     ]
 
     inicio = time.time()
-    intento = 0
+    intento = 0 
 
     while time.time() - inicio < tiempo_limite:
         random.seed(intento)
@@ -241,27 +232,15 @@ def buscar_mejor_solucion(tareas_originales, recursos_originales, tiempo_limite=
     return mejor_asignaciones, mejor_makespan
 
 
-tareas_originales = leer_tareas("tareas_EP.txt")
-recursos_originales = leer_recursos("recursos_EP.txt")
+tareas_originales = leer_tareas("tareas_prueba_200.txt")
+recursos_originales = leer_recursos("recursos_prueba_5.txt")
 
 mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
     tareas_originales,
     recursos_originales,
-    tiempo_limite=0.5
+    tiempo_limite=0.3
 )
 
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
 
-def main():
-    tareas_originales = leer_tareas("tareas_1000.txt")
-    recursos_originales = leer_recursos("recursos_500.txt")
-
-    mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
-        tareas_originales,
-        recursos_originales,
-        tiempo_limite=0.5
-    )
-
-    escribir_output("output.txt", mejor_asignacion)
-    print("Makespan:", mejor_makespan)
