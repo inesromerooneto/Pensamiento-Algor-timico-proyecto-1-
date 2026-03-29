@@ -232,20 +232,18 @@ def buscar_mejor_solucion(tareas_originales, recursos_originales, tiempo_limite=
     return mejor_asignaciones, mejor_makespan
 
 
-tareas_originales = leer_tareas("tareas_prueba_200.txt")
-recursos_originales = leer_recursos("recursos_prueba_5.txt")
+tareas_originales = leer_tareas("tareas_EP.txt")
+recursos_originales = leer_recursos("recursos_EP.txt")
 
 mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
     tareas_originales,
     recursos_originales,
-    tiempo_limite=0.3
+    tiempo_limite=0.5
 )
 
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
 
-<<<<<<< HEAD
-=======
 def main():
     tareas_originales = leer_tareas("tareas_EP.txt")
     recursos_originales = leer_recursos("recursos_EP.txt")
@@ -258,4 +256,3 @@ def main():
 
     escribir_output("output.txt", mejor_asignacion)
     print("Makespan:", mejor_makespan)
->>>>>>> 66e0e739e1f5c4ef648f1b222b1700e1a95d81a8
