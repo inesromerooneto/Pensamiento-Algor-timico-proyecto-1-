@@ -1,5 +1,14 @@
 from pathlib import Path
+import time
 
+def medir_tiempo(funcion, *args):
+    inicio = time.perf_counter()
+    resultado = funcion(*args)
+    fin = time.perf_counter()
+
+    print(f"Tiempo de ejecución: {fin - inicio:.4f} segundos")
+
+    return resultado
 def leer_tareas(nombre_archivo) -> list[dict[str, object]]:
     tareas = []
     ruta = Path(__file__).resolve().parent / nombre_archivo
@@ -173,4 +182,6 @@ mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
 
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
+import time
 
+medir_tiempo(buscar_mejor_solucion, tareas_originales, recursos_originales)
