@@ -1,7 +1,4 @@
 from pathlib import Path
-import random
-import time
-
 
 def leer_tareas(nombre_archivo) -> list[dict[str, object]]:
     tareas = []
@@ -48,6 +45,7 @@ def leer_recursos(nombre_archivo) -> list[dict[str, object]]:
             recursos.append(recurso)
 
     return recursos
+
 def crear_mapa_categorias(recursos):
     mapa = {}
 
@@ -59,6 +57,7 @@ def crear_mapa_categorias(recursos):
             mapa[categoria].append(recurso)
 
     return mapa
+
 def copiar_tareas(tareas):
     copia = []
 
@@ -85,15 +84,6 @@ def copiar_recursos(recursos):
 
     return copia
 
-def cantidad_compatibles(tarea, recursos):
-    contador = 0
-
-    for r in recursos:
-        if tarea["categoria"] in r["categorias"]:
-            contador += 1
-
-    return contador
-
 def elegir_recurso(tarea, mapa_categorias):
     compatibles = mapa_categorias.get(tarea["categoria"], [])
 
@@ -108,7 +98,7 @@ def elegir_recurso(tarea, mapa_categorias):
 
     return mejor_recurso
 
-def asignar_tareas(tareas, recursos, mapa_categorias):
+def asignar_tareas(tareas, mapa_categorias):
     asignaciones = []
 
     for tarea in tareas:
@@ -133,14 +123,10 @@ def asignar_tareas(tareas, recursos, mapa_categorias):
 
     return asignaciones
 
-def obtener_duracion(tarea):
-    return tarea["duracion"]
-
-def ordenar_tareas_segun_criterio(tareas, recursos, criterio):
-    if criterio == "larga_primero":
-        tareas.sort(key=obtener_duracion, reverse=True)
-
+def ordenar_tareas(tareas):
+    tareas.sort(key=lambda tarea: tarea["duracion"], reverse=True)
     return tareas
+
 
 def calcular_makespan(recursos):
     makespan = 0
@@ -168,10 +154,10 @@ def buscar_mejor_solucion(tareas_originales, recursos_originales):
     tareas = copiar_tareas(tareas_originales)
     recursos = copiar_recursos(recursos_originales)
 
-    tareas = ordenar_tareas_segun_criterio(tareas, recursos, "larga_primero")
+    tareas = ordenar_tareas(tareas)
     mapa_categorias = crear_mapa_categorias(recursos)
 
-    asignaciones = asignar_tareas(tareas, recursos, mapa_categorias)
+    asignaciones = asignar_tareas(tareas, mapa_categorias)
     makespan = calcular_makespan(recursos)
 
     return asignaciones, makespan
@@ -183,6 +169,7 @@ mejor_asignacion, mejor_makespan = buscar_mejor_solucion(
     tareas_originales,
     recursos_originales
 )
+
 
 escribir_output("output.txt", mejor_asignacion)
 print("Makespan:", mejor_makespan)
